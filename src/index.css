@@ -1,0 +1,120 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Roboto;
+}
+
+
+/* Home Button */
+
+.home-container {
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.btn {
+  transition: 0.3s ease;
+}
+
+.btn:hover {
+  transform: scale(1.05);
+}
+
+.bg-dark {
+  background-color: #111 !important;
+}
+
+
+/* Footer Design */
+
+.footer-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.footer-details {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 250px;
+}
+
+.footer-details h6 {
+  width: 100%;
+  font-weight: normal;
+  font-size: 14px;
+  color: #ccc;
+}
+
+.footer-details div {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.footer-details div button {
+  padding: 10px;
+  border-radius: 50%;
+  background-color: #fff;
+  color: #000;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.footer-details div button:hover {
+  background-color: #ddd;
+}
+
+.footer-details p {
+  color: #bbb;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.footer-details p i {
+  margin-right: 8px;
+  color: #888;
+}
+
+.footer-details p:hover {
+  color: #fff;
+  letter-spacing: 0.3px;
+}
+
+.footer-details h5 {
+  font-weight: bold;
+  font-size: 16px;
+  color: #fff;
+  text-align: left;
+}
+
+.copright-div {
+  text-align: center;
+  padding-top: 1rem;
+  color: #888;
+}
+
+/* Responsive */
+@media screen and (max-width: 983px) {
+  .footer-container {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-left: 10px;
+  }
+}
+
+/* Login Page */
+input:focus {
+  border-color: #ffffff !important;
+  box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
+}
+
+input, label {
+  font-weight: 500;
+}
+
