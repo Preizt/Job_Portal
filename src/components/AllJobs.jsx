@@ -53,6 +53,15 @@ const AllJobs = () => {
       type: "Full-time",
       salary: "₹5,00,000 - ₹6,50,000 / year",
     },
+    {
+      id: 5,
+      title: "HR Generalist",
+      company: "PeopleFirst",
+      category: "HR",
+      location: "Chennai",
+      type: "Full-time",
+      salary: "₹5,00,000 - ₹6,50,000 / year",
+    },
   ];
 
   const categories = ["All", "IT", "Marketing", "HR", "Design"];

@@ -1,9 +1,64 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "./Footer";
+import { toast } from "react-toastify";
 
 const Home = () => {
+  // const [loading, setLoading] = useState(true);
+  // const [percent, setPercent] = useState(0);
+
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setPercent((prev) => {
+  //       if (prev >= 100) {
+  //         clearInterval(interval);
+  //         setTimeout(() => setLoading(false), 500); // Delay to show 100% momentarily
+  //         return 100;
+  //       }
+  //       return prev + 1;
+  //     });
+  //   }, 5); // Adjust speed
+
+  //   return () => clearInterval(interval);
+  // }, []);
+
+  // if (loading) {
+  //   return (
+  //     <div
+  //       className="d-flex flex-column justify-content-center align-items-center text-white"
+  //       style={{
+  //         backgroundColor: "#000",
+  //         minHeight: "100vh",
+  //       }}
+  //     >
+
+  //       <h1 className="fw-bold"> NexHire</h1>
+  //       <p>Where Employers Meet Exceptional Talent</p>
+  //       <div className="spinner-border text-light mb-3" role="status" />
+  //       <p className="mt-2">{percent}%</p>
+  //     </div>
+  //   );
+  // }
+
+  const role = sessionStorage.getItem("role");
+  const token = sessionStorage.getItem("jwttoken");
+
+  const navigate = useNavigate();
+
+  const handlePostJob = () => {
+    const token = sessionStorage.getItem("jwttoken");
+    const role = sessionStorage.getItem("role");
+
+    if (!token) {
+      toast.warning("Login Required");
+    } else if (role === "employer") {
+      navigate("/employer/addjob");
+    } else {
+      toast.error("Access Denied");
+    }
+  };
+
   return (
     <>
       <Header />
@@ -28,12 +83,13 @@ const Home = () => {
             >
               Find Jobs
             </Link>
-            <Link
-              to="/uploadjobs"
+
+            <button
               className="btn btn-light text-black px-4 rounded-pill fw-semibold"
+              onClick={handlePostJob}
             >
               Post a Job
-            </Link>
+            </button>
           </div>
           <p className="text-light w-75 mx-auto">
             <strong>NexHire</strong> is a modern job portal web application that
@@ -76,78 +132,28 @@ const Home = () => {
             Top Companies Hiring From Us
           </h2>
           <div className="row text-center mt-5">
-            <div className="col-md-3 mb-4">
-              <img
-                src="https://logo.clearbit.com/google.com"
-                alt="Google"
-                width="80"
-                height="80"
-              />
-              <p className="mt-2 fw-semibold">Google</p>
-            </div>
-            <div className="col-md-3 mb-4">
-              <img
-                src="https://logo.clearbit.com/microsoft.com"
-                alt="Microsoft"
-                width="80"
-                height="80"
-              />
-              <p className="mt-2 fw-semibold">Microsoft</p>
-            </div>
-            <div className="col-md-3 mb-4">
-              <img
-                src="https://logo.clearbit.com/amazon.com"
-                alt="Amazon"
-                width="80"
-                height="80"
-              />
-              <p className="mt-2 fw-semibold">Amazon</p>
-            </div>
-            <div className="col-md-3 mb-4">
-              <img
-                src="https://logo.clearbit.com/meta.com"
-                alt="Meta"
-                width="80"
-                height="80"
-              />
-              <p className="mt-2 fw-semibold">Meta</p>
-            </div>
-            <div className="col-md-3 mb-4">
-              <img
-                src="https://logo.clearbit.com/tcs.com"
-                alt="TCS"
-                width="80"
-                height="80"
-              />
-              <p className="mt-2 fw-semibold">TCS</p>
-            </div>
-            <div className="col-md-3 mb-4">
-              <img
-                src="https://logo.clearbit.com/infosys.com"
-                alt="Infosys"
-                width="80"
-                height="80"
-              />
-              <p className="mt-2 fw-semibold">Infosys</p>
-            </div>
-            <div className="col-md-3 mb-4">
-              <img
-                src="https://logo.clearbit.com/accenture.com"
-                alt="Accenture"
-                width="80"
-                height="80"
-              />
-              <p className="mt-2 fw-semibold">Accenture</p>
-            </div>
-            <div className="col-md-3 mb-4">
-              <img
-                src="https://logo.clearbit.com/adobe.com"
-                alt="Adobe"
-                width="80"
-                height="80"
-              />
-              <p className="mt-2 fw-semibold">Adobe</p>
-            </div>
+            {[
+              "google.com",
+              "microsoft.com",
+              "amazon.com",
+              "meta.com",
+              "tcs.com",
+              "infosys.com",
+              "accenture.com",
+              "adobe.com",
+            ].map((domain, index) => (
+              <div className="col-md-3 mb-4" key={index}>
+                <img
+                  src={`https://logo.clearbit.com/${domain}`}
+                  alt={domain}
+                  width="80"
+                  height="80"
+                />
+                <p className="mt-2 fw-semibold">
+                  {domain.replace(".com", "").toUpperCase()}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -157,33 +163,27 @@ const Home = () => {
             What Our Users Say
           </h2>
           <div className="row g-4">
-            <div className="col-md-4">
-              <div className="p-4 bg-dark border rounded-4 text-white h-100 shadow">
-                <p className="fst-italic">
-                  "NexHire helped me land my first remote job. Super easy and
-                  effective!"
-                </p>
-                <h6 className="mt-3 text-end">- Akshay R., Developer</h6>
+            {[
+              {
+                text: `"NexHire helped me land my first remote job. Super easy and effective!"`,
+                name: "- Akshay R., Developer",
+              },
+              {
+                text: `"I posted a job and got 15+ qualified applicants within 2 days."`,
+                name: "- Priya M., Recruiter",
+              },
+              {
+                text: `"Clean interface, fast application process. Love the dark theme!"`,
+                name: "- Neha S., Designer",
+              },
+            ].map((item, idx) => (
+              <div className="col-md-4" key={idx}>
+                <div className="p-4 bg-dark border rounded-4 text-white h-100 shadow">
+                  <p className="fst-italic">{item.text}</p>
+                  <h6 className="mt-3 text-end">{item.name}</h6>
+                </div>
               </div>
-            </div>
-            <div className="col-md-4">
-              <div className="p-4 bg-dark border rounded-4 text-white h-100 shadow">
-                <p className="fst-italic">
-                  "I posted a job and got 15+ qualified applicants within 2
-                  days."
-                </p>
-                <h6 className="mt-3 text-end">- Priya M., Recruiter</h6>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="p-4 bg-dark border rounded-4 text-white h-100 shadow">
-                <p className="fst-italic">
-                  "Clean interface, fast application process. Love the dark
-                  theme!"
-                </p>
-                <h6 className="mt-3 text-end">- Neha S., Designer</h6>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
 
@@ -201,7 +201,7 @@ const Home = () => {
           </Link>
         </div>
       </div>
-      <Footer/>
+      <Footer />
     </>
   );
 };

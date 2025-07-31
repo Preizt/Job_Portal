@@ -9,7 +9,11 @@ const EmployeeSidePanel = () => {
 
   const navItems = [
     { to: "/employer/dashboard", icon: "fa-chart-line", label: "Dashboard" },
-    { to: "/employer/addjob", icon: "fa-briefcase", label: "New Job Opportunity" },
+    {
+      to: "/employer/addjob",
+      icon: "fa-briefcase",
+      label: "Job Listing",
+    },
     // { to: "/employer/manage", icon: "fa-pen-to-square", label: "Manage Posts" },
     { to: "/employer/applications", icon: "fa-users", label: "Applications" },
   ];
@@ -23,11 +27,10 @@ const EmployeeSidePanel = () => {
     <div style={styles.sidebar}>
       {/* Brand */}
       <div style={styles.brand}>
-        <Link to={'/'} style={{ textDecoration: "none" }}> 
-
-        <h2 style={styles.brandText}>
-          Nex<span style={styles.accent}>Hire</span>
-        </h2>
+        <Link to={"/"} style={{ textDecoration: "none" }}>
+          <h2 style={styles.brandText}>
+            Nex<span style={styles.accent}>Hire</span>
+          </h2>
         </Link>
         <hr style={{ borderColor: "#444", opacity: 0.3 }} />
       </div>
@@ -48,7 +51,10 @@ const EmployeeSidePanel = () => {
                 color: location.pathname === item.to ? "#61dafb" : "#bbb",
               }}
             >
-              <i className={`fa-solid ${item.icon}`} style={{ width: "20px" }}></i>
+              <i
+                className={`fa-solid ${item.icon}`}
+                style={{ width: "20px" }}
+              ></i>
               <span style={{ marginLeft: "10px" }}>{item.label}</span>
             </Link>
           </li>
@@ -75,17 +81,49 @@ const EmployeeSidePanel = () => {
       </ul>
 
       {/* Logout Confirmation Modal */}
-      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Leave Employer Panel</Modal.Title>
+      <Modal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        centered
+        backdrop="static"
+        keyboard={false}
+      >
+        <Modal.Header
+          closeButton
+          style={{
+            backgroundColor: "#121212",
+            borderBottom: "1px solid #1f1f1f",
+            color: "#fff",
+          }}
+        >
+          <Modal.Title>Are you Sure ?</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Are you sure you want to go to Home Page?</Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
+
+        <Modal.Footer
+          style={{
+            backgroundColor: "#121212",
+            borderTop: "1px solid #1f1f1f",
+          }}
+        >
+          <Button
+            variant="outline-light"
+            onClick={() => setShowModal(false)}
+            style={{
+              borderColor: "#007bff",
+              color: "#007bff",
+            }}
+          >
             Cancel
           </Button>
-          <Button variant="danger" onClick={handleLogout}>
-            Go Home
+          <Button
+            style={{
+              backgroundColor: "#007bff",
+              border: "none",
+              color: "#fff",
+            }}
+            onClick={handleLogout}
+          >
+            Go HomePage
           </Button>
         </Modal.Footer>
       </Modal>
