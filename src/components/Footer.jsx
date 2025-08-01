@@ -7,7 +7,7 @@ const Footer = () => {
         <div className="footer-container">
           {/* About Section */}
           <div className="footer-details">
-            <h3>Jobify</h3>
+            <h3>Nex<span style={{color:"#2196F3"}}>Hire</span></h3>
             <h6>
               Discover jobs, post opportunities, and connect with top talent—all in one place.
             </h6>

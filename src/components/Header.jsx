@@ -38,7 +38,7 @@ const Header = () => {
         <div className="container-fluid">
           {/* Logo */}
           <Link className="navbar-brand" to="/">
-            <h1 className="fw-bold text-white">NexHire</h1>
+            <h1 className="fw-bold text-white">Nex<span style={{color:"#2196F3"}}>Hire</span></h1>
           </Link>
 
           {/* Toggle Button */}

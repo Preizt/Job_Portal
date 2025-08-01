@@ -1,37 +1,144 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Eye, Edit, Trash2, Plus } from "lucide-react";
 import { Modal, Button, Form } from "react-bootstrap";
+import EditJobPost from "./EditJobPost";
+import { toast } from "react-toastify";
+import { getAllJobPosts, postJob } from "../../services/allAPI";
+import baseURL from "../../services/baseURL";
 
-const mockJobs = [
-  {
-    id: 1,
-    title: "Frontend Developer",
-    department: "Engineering",
-    salary: "₹8,00,000",
-    location: "Bangalore",
-    date: "2025-07-25",
-    logo: "https://img.icons8.com/color/96/react-native.png",
-  },
-  {
-    id: 2,
-    title: "Backend Developer",
-    department: "Engineering",
-    salary: "₹9,00,000",
-    location: "Chennai",
-    date: "2025-07-20",
-    logo: "https://img.icons8.com/color/96/nodejs.png",
-  },
-];
 
 const EmployeeCRUD = () => {
-  const [show, setShow] = useState(false);
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
-
+  const[jobs,setJob]=useState([])
   const [preview, setPreview] = useState();
+  const [data, setData] = useState({
+    image: "",
+    title: "",
+    description: "",
+    company: "",
+    location: "",
+    salary: "",
+    requirement: "",
+  });
+
+  useEffect(() => {
+    if (data.image) {
+      if (
+        data.image.type == "image/jpeg" ||
+        data.image.type == "image/png" ||
+        data.image.type == "image/jpg"
+      ) {
+        setPreview(URL.createObjectURL(data.image));
+        setImageType(false);
+      } else {
+        setPreview("");
+        setImageType(true);
+        toast.warning("Invalid File");
+      }
+    }
+   
+    
+  }, [data.image]);
+
+  const [show, setShow] = useState(false);
+  const handleShow = () => setShow(true);
   const [imageType, setImageType] = useState(false);
 
-  // setPreview(URL.createObjectURL(projectData.projectImg));
+  const addJob = async () => {
+    if (
+      data.image &&
+      data.title &&
+      data.company &&
+      data.salary &&
+      data.description &&
+      data.requirement &&
+      data.location
+    ) {
+      try {
+        const payload = new FormData();
+
+        payload.append("image", data.image);
+        payload.append("title", data.title);
+        payload.append("description", data.description);
+        payload.append("salary", data.salary);
+        payload.append("company", data.company);
+        payload.append("requirements", data.requirement);
+        payload.append("location", data.location);
+
+
+        const token = sessionStorage.getItem("jwttoken");
+        const reqHeader = {"Authorization": `Bearer ${token}`};
+        const apiResponse = await postJob(payload, reqHeader);
+        if (apiResponse.status === 201) {
+          toast.success("Job Posted");
+          setShow(false);
+
+          setData({
+            image: "",
+            title: "",
+            description: "",
+            company: "",
+            location: "",
+            salary: "",
+            requirement: "",
+          });
+
+          setPreview(null);
+          getAllPosts()
+        } else {
+          toast.error("Something went wrong!");
+        }
+      } catch (error) {
+        console.log(error);
+
+        toast.error("Server error occurred");
+      }
+    } else {
+      toast.warning(
+        "Please fill in all required fields and upload a valid image."
+      );
+    }
+  };
+
+  const handleClose = () => {
+    setShow(false);
+    setData({
+      image: "",
+      title: "",
+      description: "",
+      company: "",
+      location: "",
+      salary: "",
+      requirement: "",
+    });
+
+    setPreview(null);
+  };
+
+// const getAllPosts = async () => {
+//   if (sessionStorage.getItem("jwttoken")) {
+//     try {
+//       const reqHeader = {
+//         "Authorization":`Bearer ${sessionStorage.getItem("jwttoken")}`,
+//       };
+
+//       const apiResponse = await getAllJobPosts(reqHeader); 
+
+//       if (apiResponse.status === 200) {
+//         setJob(apiResponse.data); 
+//         console.log(apiResponse);
+        
+        
+//       } else {
+//         alert(apiResponse.data);
+//       }
+//     } catch (err) {
+//       alert(err.message || "Something went wrong while fetching jobs");
+//     }
+//   } else {
+//     toast.error("Please login first");
+//   }
+// };
+
 
   return (
     <>
@@ -57,10 +164,10 @@ const EmployeeCRUD = () => {
 
         <hr />
 
-        <div style={darkStyles.cardWrapper}>
-          {mockJobs.map((job) => (
-            <div key={job.id} style={darkStyles.card}>
-              <img src={job.logo} alt="Logo" style={darkStyles.logo} />
+        <div style={darkStyles.cardWrapper} >
+          {jobs.map((job,index) => (
+            <div key={index} style={darkStyles.card}>
+              <img src={`${baseURL}/uploads/${job.image}`} alt="Logo" style={darkStyles.logo} />
               <div style={darkStyles.cardContent}>
                 <h4 style={darkStyles.title}>{job.title}</h4>
                 <p style={darkStyles.info}>
@@ -81,11 +188,9 @@ const EmployeeCRUD = () => {
                   >
                     <Eye size={16} color="#fff" />
                   </button>
-                  <button
-                    style={{ ...darkStyles.button, backgroundColor: "#43a047" }}
-                  >
-                    <Edit size={16} color="#fff" />
-                  </button>
+
+                  <EditJobPost />
+
                   <button
                     style={{ ...darkStyles.button, backgroundColor: "#e53935" }}
                   >
@@ -119,6 +224,9 @@ const EmployeeCRUD = () => {
                   type="file"
                   accept="image/*"
                   style={{ display: "none" }}
+                  onChange={(e) => {
+                    setData({ ...data, image: e.target.files[0] });
+                  }}
                 />
                 <img
                   src={
@@ -131,11 +239,11 @@ const EmployeeCRUD = () => {
                   style={{ width: "100%", height: "auto", cursor: "pointer" }}
                 />
               </label>
-              {!imageType ? (
-                <p className="text-primary  mt-2 text-center">
-                  Upload only jpeg, jpg, png formats
+              {imageType && (
+                <p className="text-danger mt-2 text-center">
+                  Invalid image format. Only jpeg, jpg, png allowed.
                 </p>
-              ) : null}
+              )}
             </div>
 
             {/* Right: Form Fields */}
@@ -144,31 +252,47 @@ const EmployeeCRUD = () => {
                 type="text"
                 className="form-control mt-2"
                 placeholder="Job Title"
+                onChange={(e) => setData({ ...data, title: e.target.value })}
               />
               <textarea
                 className="form-control mt-2"
                 placeholder="Description"
                 rows="3"
+                onChange={(e) =>
+                  setData({ ...data, description: e.target.value })
+                }
               />
               <input
                 type="text"
                 className="form-control mt-2"
                 placeholder="Company"
+                onChange={(e) => {
+                  setData({ ...data, company: e.target.value });
+                }}
               />
               <input
                 type="text"
                 className="form-control mt-2"
                 placeholder="Location"
+                onChange={(e) => {
+                  setData({ ...data, location: e.target.value });
+                }}
               />
               <input
                 type="text"
                 className="form-control mt-2"
                 placeholder="Salary"
+                onChange={(e) => {
+                  setData({ ...data, salary: e.target.value });
+                }}
               />
               <input
                 type="text"
                 className="form-control mt-2"
                 placeholder="Requirements"
+                onChange={(e) => {
+                  setData({ ...data, requirement: e.target.value });
+                }}
               />
             </div>
           </div>
@@ -178,7 +302,7 @@ const EmployeeCRUD = () => {
           <Button variant="secondary" onClick={handleClose}>
             Close
           </Button>
-          <Button variant="primary" onClick={handleClose}>
+          <Button variant="primary" onClick={addJob}>
             Submit
           </Button>
         </Modal.Footer>
@@ -243,7 +367,7 @@ const darkStyles = {
     display: "flex",
     flexWrap: "wrap",
     gap: "20px",
-   
+
     padding: "20px",
     backgroundColor: "#121212", // Dark background
   },
