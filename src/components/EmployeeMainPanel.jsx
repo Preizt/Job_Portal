@@ -12,6 +12,7 @@ const EmployeeMainPanel = () => {
 
       {/* Main Content */}
       <div style={styles.main}>
+        
         <Outlet />
       </div>
     </div>

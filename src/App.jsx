@@ -8,9 +8,11 @@ import EmployeeDashboard from "../src/components/employee/EmployeeDashBoard";
 import EmployeeCRUD from "./components/employee/EmployeeCRUD";
 import EmployeeMainPanel from "./components/EmployeeMainPanel";
 import Applicant from "./components/employee/Applicant";
-import SingleJobView from "./components/SingleJobView";
 import ApplicantProfile from "./components/ApplicantProfile";
 import { Bounce, ToastContainer } from "react-toastify";
+import SingleJobView from "./components/SingleJobView";
+import JobPostView from "./components/employee/JobPostView";
+
 
 function App() {
   return (
@@ -37,11 +39,15 @@ function App() {
           <Route path="dashboard" index element={<EmployeeDashboard />} />
           <Route path="addjob" element={<EmployeeCRUD />} />
           <Route path="applications" element={<Applicant />} />
+          <Route path="singlejobpost/:id" element={<JobPostView/>} />
+
         </Route>
 
         <Route path="/jobs" element={<AllJobs />} />
         <Route path="/applicantprofile" element={<ApplicantProfile />} />
-        <Route path="/singlepost" element={<SingleJobView />} />
+        <Route path="/singlepost/:id" element={<SingleJobView />} />
+
+        
       </Routes>
     </>
   );

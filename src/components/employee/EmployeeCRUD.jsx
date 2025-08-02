@@ -3,12 +3,17 @@ import { Eye, Edit, Trash2, Plus } from "lucide-react";
 import { Modal, Button, Form } from "react-bootstrap";
 import EditJobPost from "./EditJobPost";
 import { toast } from "react-toastify";
-import { getAllJobPosts, postJob } from "../../services/allAPI";
+import { deletePost, getAllJobPosts, postJob } from "../../services/allAPI";
 import baseURL from "../../services/baseURL";
-
+import moment from "moment";
+import { useNavigate } from "react-router-dom";
 
 const EmployeeCRUD = () => {
-  const[jobs,setJob]=useState([])
+  const navigate = useNavigate();
+
+
+  const [searchKey, setSearchKey] = useState("");
+  const [jobs, setJob] = useState([]);
   const [preview, setPreview] = useState();
   const [data, setData] = useState({
     image: "",
@@ -17,8 +22,9 @@ const EmployeeCRUD = () => {
     company: "",
     location: "",
     salary: "",
-    requirement: "",
+    requirements: "",
   });
+  console.log(searchKey);
 
   useEffect(() => {
     if (data.image) {
@@ -35,8 +41,6 @@ const EmployeeCRUD = () => {
         toast.warning("Invalid File");
       }
     }
-   
-    
   }, [data.image]);
 
   const [show, setShow] = useState(false);
@@ -50,7 +54,7 @@ const EmployeeCRUD = () => {
       data.company &&
       data.salary &&
       data.description &&
-      data.requirement &&
+      data.requirements &&
       data.location
     ) {
       try {
@@ -61,12 +65,11 @@ const EmployeeCRUD = () => {
         payload.append("description", data.description);
         payload.append("salary", data.salary);
         payload.append("company", data.company);
-        payload.append("requirements", data.requirement);
+        payload.append("requirements", data.requirements);
         payload.append("location", data.location);
 
-
         const token = sessionStorage.getItem("jwttoken");
-        const reqHeader = {"Authorization": `Bearer ${token}`};
+        const reqHeader = { Authorization: `Bearer ${token}` };
         const apiResponse = await postJob(payload, reqHeader);
         if (apiResponse.status === 201) {
           toast.success("Job Posted");
@@ -83,7 +86,7 @@ const EmployeeCRUD = () => {
           });
 
           setPreview(null);
-          getAllPosts()
+          getAllPosts();
         } else {
           toast.error("Something went wrong!");
         }
@@ -114,31 +117,52 @@ const EmployeeCRUD = () => {
     setPreview(null);
   };
 
-// const getAllPosts = async () => {
-//   if (sessionStorage.getItem("jwttoken")) {
-//     try {
-//       const reqHeader = {
-//         "Authorization":`Bearer ${sessionStorage.getItem("jwttoken")}`,
-//       };
+  const getAllPosts = async () => {
+    const token = sessionStorage.getItem("jwttoken");
 
-//       const apiResponse = await getAllJobPosts(reqHeader); 
+    if (token) {
+      try {
+        const reqHeader = { Authorization: `Bearer ${token}` };
 
-//       if (apiResponse.status === 200) {
-//         setJob(apiResponse.data); 
-//         console.log(apiResponse);
-        
-        
-//       } else {
-//         alert(apiResponse.data);
-//       }
-//     } catch (err) {
-//       alert(err.message || "Something went wrong while fetching jobs");
-//     }
-//   } else {
-//     toast.error("Please login first");
-//   }
-// };
+        // console.log(reqHeader);
 
+        const apiResponse = await getAllJobPosts(reqHeader, searchKey);
+
+        if (apiResponse.status === 200) {
+          setJob(apiResponse.data);
+          // console.log(apiResponse);
+        } else {
+          alert(apiResponse.data);
+        }
+      } catch (err) {
+        alert(err.message || "Something went wrong while fetching jobs");
+      }
+    } else {
+      toast.error("Please login first");
+    }
+  };
+
+  useEffect(() => {
+    getAllPosts();
+  }, [searchKey]);
+
+  const onDeleteBtn = async (id) => {
+    const token = sessionStorage.getItem("jwttoken");
+
+    try {
+      const reqHeader = { Authorization: `Bearer ${token}` };
+      const apiResponse = await deletePost(reqHeader, id);
+
+      if (apiResponse.status == 200) {
+        getAllPosts();
+        toast.success("Job Post Removed");
+      } else {
+        toast.error("Something went Wrong");
+      }
+    } catch (error) {
+      toast.danger(error);
+    }
+  };
 
   return (
     <>
@@ -157,45 +181,77 @@ const EmployeeCRUD = () => {
           </button>
           <input
             type="text"
-            placeholder="Search by title, department, or location"
+            placeholder="Search by title"
             style={styles.searchInput}
+            onChange={(e) => setSearchKey(e.target.value)}
           />
         </div>
 
         <hr />
 
-        <div style={darkStyles.cardWrapper} >
-          {jobs.map((job,index) => (
-            <div key={index} style={darkStyles.card}>
-              <img src={`${baseURL}/uploads/${job.image}`} alt="Logo" style={darkStyles.logo} />
-              <div style={darkStyles.cardContent}>
-                <h4 style={darkStyles.title}>{job.title}</h4>
-                <p style={darkStyles.info}>
-                  <strong>Dept:</strong> {job.department}
-                </p>
-                <p style={darkStyles.info}>
-                  <strong>Salary:</strong> {job.salary}
-                </p>
-                <p style={darkStyles.info}>
-                  <strong>Location:</strong> {job.location}
-                </p>
-                <p style={darkStyles.info}>
-                  <strong>Posted:</strong> {job.date}
-                </p>
-                <div style={darkStyles.buttonGroup}>
-                  <button
-                    style={{ ...darkStyles.button, backgroundColor: "#1e88e5" }}
-                  >
-                    <Eye size={16} color="#fff" />
-                  </button>
+        <div style={darkStyles.cardWrapper}>
+          {[...jobs].reverse().map((job, index) => (
+            <div key={index} style={{ position: "relative" }}>
+              {/* Time on top-right of the card */}
+              <span
+                style={{
+                  position: "absolute",
+                  top: "4px",
+                  right: "10px",
+                  fontSize: "12px",
+                  color: "#bbb",
+                  background: "rgba(0,0,0,0.5)",
+                  padding: "4px 8px",
+                  borderRadius: "12px",
+                }}
+              >
+                Posted {moment(job.time).fromNow()}
+              </span>
 
-                  <EditJobPost />
+              {/* The actual card */}
+              <div style={{ ...darkStyles.card, paddingTop: "30px" }}>
+                <img
+                  src={`${baseURL}/uploads/${job.image}`}
+                  alt="Logo"
+                  style={darkStyles.logo}
+                />
+                <div style={darkStyles.cardContent}>
+                  <h4 style={darkStyles.title}>{job.title}</h4>
+                  <p style={darkStyles.info}>
+                    <strong>Company:</strong> {job.company}
+                  </p>
+                  <p style={darkStyles.info}>
+                    <strong>Salary:</strong> {job.salary} LPA
+                  </p>
+                  <p style={darkStyles.info}>
+                    <strong>Location:</strong> {job.location}
+                  </p>
 
-                  <button
-                    style={{ ...darkStyles.button, backgroundColor: "#e53935" }}
-                  >
-                    <Trash2 size={16} color="#fff" />
-                  </button>
+                  <div style={darkStyles.buttonGroup}>
+                    <button
+                      style={{
+                        ...darkStyles.button,
+                        backgroundColor: "#1e88e5",
+                      }}
+                      onClick={() => navigate(`/employer/singlejobpost/${job._id}`)}
+                    >
+                      <Eye size={16} color="#fff" />
+                    </button>
+
+                    <EditJobPost job={job} />
+
+                    <button
+                      style={{
+                        ...darkStyles.button,
+                        backgroundColor: "#e53935",
+                      }}
+                      onClick={() => {
+                        onDeleteBtn(job._id);
+                      }}
+                    >
+                      <Trash2 size={16} color="#fff" />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -291,7 +347,7 @@ const EmployeeCRUD = () => {
                 className="form-control mt-2"
                 placeholder="Requirements"
                 onChange={(e) => {
-                  setData({ ...data, requirement: e.target.value });
+                  setData({ ...data, requirements: e.target.value });
                 }}
               />
             </div>

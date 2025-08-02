@@ -5,7 +5,11 @@ import { Bookmark } from "lucide-react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 
+
 const SingleJobView = () => {
+  
+
+
   const job = {
     title: "Frontend Developer",
     company: "TechNova Solutions",
@@ -29,9 +33,13 @@ const SingleJobView = () => {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
+
+
+
+
   return (
     <>
-      <Header />
+    
 
       <div style={styles.container}>
         <div style={styles.card}>
@@ -131,7 +139,7 @@ const SingleJobView = () => {
         </Modal.Footer>
       </Modal>
 
-      <Footer />
+      
     </>
   );
 };

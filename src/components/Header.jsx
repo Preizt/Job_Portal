@@ -81,40 +81,42 @@ const Header = () => {
 
             {/* Right Side Buttons */}
             <div className="d-flex align-items-center gap-3">
-              {isLoggedIn ? (
-                <>
-                  {/* Welcome Text */}
+  {isLoggedIn ? (
+    <>
+      {/* Profile Link */}
+      <Link
+        to={isApplicant ? "/applicantprofile" : "/employer/dashboard"}
+        className="d-flex align-items-center gap-2 text-decoration-none"
+      >
+        <div
+          className="bg-white text-primary rounded-circle d-flex justify-content-center align-items-center"
+          style={{ width: "36px", height: "36px" }}
+        >
+          <i className="fa-regular fa-user"></i>
+        </div>
+        <span className="fw-semibold text-white d-none d-md-inline">
+          {authData.name}
+        </span>
+      </Link>
 
-                  {/* Profile Icon */}
-                  <Link
-                    to={
-                      isApplicant ? "/applicantprofile" : "/employer/dashboard"
-                    }
-                    className="text-white"
-                    style={{ textDecoration: "none" }}
-                  >
-                    <i className="fa-regular fa-user fs-5"></i>
-                    <span className="text-white fw-semibold d-none d-md-inline">
-                      {authData.name}
-                    </span>
-                  </Link>
+      {/* Logout Button */}
+      <button
+        className="btn btn-outline-light btn-sm px-4 rounded-pill fw-semibold"
+        onClick={logoutBtn}
+        style={{ backgroundColor: "#dc3545", borderColor: "#dc3545" }}
+      >
+        Logout
+      </button>
+    </>
+  ) : (
+    <Link to="/login">
+      <button className="btn btn-primary btn-sm px-4 rounded-pill fw-semibold">
+        Login
+      </button>
+    </Link>
+  )}
+</div>
 
-                  {/* Logout Button */}
-                  <button
-                    className="btn btn-sm px-3 text-white btn-danger rounded-5"
-                    onClick={logoutBtn}
-                  >
-                    Logout
-                  </button>
-                </>
-              ) : (
-                <Link to="/login">
-                  <button className="btn btn-sm px-3 text-white btn-primary rounded-5">
-                    Login
-                  </button>
-                </Link>
-              )}
-            </div>
           </div>
         </div>
       </nav>

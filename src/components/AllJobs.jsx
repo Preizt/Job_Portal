@@ -1,161 +1,120 @@
-import React, { useState } from "react";
-import { Form, Row, Col, Card, Button, Stack } from "react-bootstrap";
-import Header from '../components/Header';
+import React, { useEffect, useState } from "react";
+import { Row, Col, Card, Button, Form } from "react-bootstrap";
+import Header from "../components/Header";
 import Footer from "../components/Footer";
+import { getApplicantAllPost } from "../services/allAPI";
+import baseURL from "../services/baseURL";
+import moment from "moment";
+import { MapPin, DollarSign, Clock } from "lucide-react";
 
 const AllJobs = () => {
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("All");
+  const [jobs, setJobs] = useState({});
 
-  const jobs = [
-    {
-      id: 1,
-      title: "Frontend Developer",
-      company: "TechNova",
-      category: "IT",
-      location: "Remote",
-      type: "Full-time",
-      salary: "₹6,00,000 - ₹9,00,000 / year",
-    },
-    {
-      id: 2,
-      title: "Marketing Executive",
-      company: "MarketMinds",
-      category: "Marketing",
-      location: "Kochi",
-      type: "Part-time",
-      salary: "₹3,00,000 - ₹4,50,000 / year",
-    },
-    {
-      id: 3,
-      title: "Backend Engineer",
-      company: "CodeCraft",
-      category: "IT",
-      location: "Bangalore",
-      type: "Full-time",
-      salary: "₹7,00,000 - ₹11,00,000 / year",
-    },
-    {
-      id: 4,
-      title: "Graphic Designer",
-      company: "PixelPoint Studios",
-      category: "Design",
-      location: "Mumbai",
-      type: "Contract",
-      salary: "₹4,00,000 - ₹5,50,000 / year",
-    },
-    {
-      id: 5,
-      title: "HR Generalist",
-      company: "PeopleFirst",
-      category: "HR",
-      location: "Chennai",
-      type: "Full-time",
-      salary: "₹5,00,000 - ₹6,50,000 / year",
-    },
-    {
-      id: 5,
-      title: "HR Generalist",
-      company: "PeopleFirst",
-      category: "HR",
-      location: "Chennai",
-      type: "Full-time",
-      salary: "₹5,00,000 - ₹6,50,000 / year",
-    },
-  ];
+  const applicantAllJobs = async () => {
+    const apiResponse = await getApplicantAllPost();
+    setJobs(apiResponse.data);
+  };
 
-  const categories = ["All", "IT", "Marketing", "HR", "Design"];
-
-  const filteredJobs = jobs.filter((job) => {
-    return (
-      (category === "All" || job.category === category) &&
-      job.title.toLowerCase().includes(search.toLowerCase())
-    );
-  });
+  useEffect(() => {
+    applicantAllJobs();
+  }, []);
 
   return (
-
     <>
+      <Header />
 
-    <Header/>
+      <div className="bg-light min-vh-100 py-5">
+        <div className="container">
+          <h2 className="mb-4 fw-bold text-center text-dark">
+            Start Your Future with NexHire
+          </h2>
 
-        <div className="bg-light min-vh-100 py-5">
-      <div className="container">
-        <h2 className="mb-4 fw-bold text-center text-dark">
-          Start Your Future with NexHire
-        </h2>
+          {/* Search Bar Only */}
+          <div className="mb-4">
+            <Form>
+              <Form.Control
+                type="text"
+                placeholder=" Search by job title"
+                className="rounded-pill px-4 py-2 shadow-sm"
+              />
+            </Form>
+          </div>
 
-        {/* Sticky Filters */}
-        <div
-          className="bg-white p-3 shadow-sm rounded mb-4 sticky-top"
-          style={{ top: "70px", zIndex: 1000 }}
-        >
-          <Form className="mb-3">
-            <Form.Control
-              type="text"
-              placeholder="🔍 Search by job title..."
-              className="rounded-pill px-4 py-2 shadow-sm"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+          {/* Job Cards */}
+
+
+<Row className="g-4">
+  {jobs.length > 0 ? (
+    jobs.map((job) => (
+      <Col md={6} lg={4} key={job._id}>
+        <Card className="shadow-sm border-0 rounded-4 h-100 job-card p-4">
+          {/* Logo and Company Info */}
+          <div className="d-flex align-items-center mb-3">
+            <img
+              src={`${baseURL}/uploads/${job.image}`}
+              alt={job.company}
+              className="me-3"
+              style={{
+                width: "64px",
+                height: "64px",
+                objectFit: "cover",
+                borderRadius: "12px",
+                border: "1px solid #e0e0e0",
+              }}
+              onError={(e) =>
+                (e.target.src =
+                  "https://cdn-icons-png.flaticon.com/512/1995/1995574.png")
+              }
             />
-          </Form>
+            <div>
+              <h6 className="mb-1 fw-bold text-dark">{job.title}</h6>
+              <p className="mb-0 text-secondary small">{job.company}</p>
+            </div>
+          </div>
 
-          <Stack
-            direction="horizontal"
-            gap={3}
-            className="justify-content-center flex-wrap"
+          {/* Job Info */}
+          <div className="text-secondary mb-3" style={{ fontSize: "0.95rem" }}>
+            <div className="d-flex align-items-center mb-2">
+              <MapPin size={16} className="me-2 text-primary" />
+              <strong className="text-dark">{job.location}</strong>
+            </div>
+            <div className="d-flex align-items-center mb-2">
+              <DollarSign size={16} className="me-2 text-success" />
+              <strong className="text-dark">
+                {job.salary} <span className="text-danger">LPA</span>
+              </strong>
+            </div>
+            <div className="d-flex align-items-center mb-2">
+              <Clock size={16} className="me-2 text-warning" />
+              <span>{moment(job.time).fromNow()}</span>
+            </div>
+            {job.type && (
+              <span className="badge bg-light text-dark border mt-2 px-3 py-1 rounded-pill">
+                {job.type}
+              </span>
+            )}
+          </div>
+
+          {/* Button */}
+          <Button
+            variant="dark"
+            className="w-100 rounded-pill fw-semibold mt-auto"
           >
-            {categories.map((cat) => (
-              <Button
-                key={cat}
-                variant={cat === category ? "dark" : "outline-dark"}
-                onClick={() => setCategory(cat)}
-                className="rounded-pill"
-              >
-                {cat}
-              </Button>
-            ))}
-          </Stack>
+            View Details
+          </Button>
+        </Card>
+      </Col>
+    ))
+  ) : (
+    <p className="text-muted text-center">No jobs available.</p>
+  )}
+</Row>
+
         </div>
-
-        {/* Job Cards */}
-        <Row className="g-4 justify-content-center">
-          {filteredJobs.length > 0 ? (
-            filteredJobs.map((job) => (
-              <Col md={6} lg={4} key={job.id}>
-                <Card className="shadow-sm border-0 h-100">
-                  <Card.Body>
-                    <Card.Title className="fw-bold">{job.title}</Card.Title>
-                    <Card.Subtitle className="mb-2 text-muted">
-                      {job.company}
-                    </Card.Subtitle>
-                    <Card.Text>
-                      <small className="d-block">📍 {job.location}</small>
-                      <small className="d-block">💼 {job.type}</small>
-                      <small className="d-block">💰 {job.salary}</small>
-                    </Card.Text>
-                    <Button
-                      variant="outline-dark"
-                      className="w-100 mt-3 rounded-pill"
-                    >
-                      View Details
-                    </Button>
-                  </Card.Body>
-                </Card>
-              </Col>
-            ))
-          ) : (
-            <p className="text-muted text-center">No jobs found.</p>
-          )}
-        </Row>
       </div>
-    </div>
 
-    <Footer/>
-    
+      <Footer />
     </>
-
-
   );
 };
 

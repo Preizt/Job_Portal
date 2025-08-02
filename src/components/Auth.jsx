@@ -3,6 +3,8 @@ import { Col, FloatingLabel, Row, Form } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { loginUser, registerUser } from "../services/allAPI";
+import { GoogleLogin } from "@react-oauth/google";
+import axios from "axios";
 
 const Auth = ({ fromRegisterPage }) => {
   const navigate = useNavigate();
@@ -37,13 +39,12 @@ const Auth = ({ fromRegisterPage }) => {
       const { email, password } = data;
       if (email && password) {
         const apiResponse = await loginUser(data);
-      //  console.log(apiResponse.data.UserDetail.role);
-       
+        //  console.log(apiResponse.data.UserDetail.role);
+
         if (apiResponse.status == 200) {
           sessionStorage.setItem("jwttoken", apiResponse.data.jwttoken);
           sessionStorage.setItem("role", apiResponse.data.UserDetail.role);
-          sessionStorage.setItem("name",apiResponse.data.UserDetail.name)
-          
+          sessionStorage.setItem("name", apiResponse.data.UserDetail.name);
 
           if (apiResponse.data.UserDetail.role == "applicant") {
             navigate("/");
@@ -60,6 +61,32 @@ const Auth = ({ fromRegisterPage }) => {
       }
     }
   };
+
+ const handleGoogleLogin = async (credentialResponse) => {
+  try {
+    const token = credentialResponse.credential;
+
+    const res = await axios.post("http://localhost:5000/auth/google", {
+      token,
+    });
+
+    // Use the correct keys from response
+    sessionStorage.setItem("jwttoken", res.data.jwttoken);
+    sessionStorage.setItem("role", res.data.UserDetail.role);
+    sessionStorage.setItem("name", res.data.UserDetail.name);
+
+    if (res.data.UserDetail.role === "applicant") {
+      navigate("/");
+      toast.success("Google Login Successful");
+    } else {
+      navigate("/employer/dashboard");
+      toast.success("Employer Google Login Successful");
+    }
+  } catch (error) {
+    console.error(error);
+    toast.error("Google login failed");
+  }
+};
 
   return (
     <div
@@ -174,6 +201,36 @@ const Auth = ({ fromRegisterPage }) => {
               >
                 {fromRegisterPage ? "Register" : "Login"}
               </button>
+
+              {/* Google Login Button */}
+
+              {!fromRegisterPage && (
+                <div className="mt-4">
+                  {/* Divider */}
+                  <div className="d-flex align-items-center">
+                    <hr className="flex-grow-1 text-white" />
+                    <span className="mx-2 text-white-50">or</span>
+                    <hr className="flex-grow-1 text-white" />
+                  </div>
+
+                  {/* Google Login */}
+                  <div className="d-flex justify-content-center mt-3">
+                    <GoogleLogin
+                      onSuccess={handleGoogleLogin}
+                      onError={() => toast.error("Google login failed")}
+                      shape="pill"
+                      size="large"
+                      width="280"
+                      theme="filled_black"
+                      text="continue_with"
+                    />
+                  </div>
+
+                  <p className="text-center text-white-50 mt-2">
+                    One-click Sign In with Google
+                  </p>
+                </div>
+              )}
 
               {/* Switch Auth Link */}
               <p className="mt-4 text-center text-white-50">
