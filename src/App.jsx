@@ -12,13 +12,13 @@ import ApplicantProfile from "./components/ApplicantProfile";
 import { Bounce, ToastContainer } from "react-toastify";
 import SingleJobView from "./components/SingleJobView";
 import JobPostView from "./components/employee/JobPostView";
-
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
   return (
     <>
       <ToastContainer
-        position="top-right"
+        position="top-center"
         autoClose={5000}
         hideProgressBar={false}
         newestOnTop={false}
@@ -30,6 +30,7 @@ function App() {
         theme="dark"
         transition={Bounce}
       />
+       <ScrollToTop />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Auth />} />
@@ -39,15 +40,12 @@ function App() {
           <Route path="dashboard" index element={<EmployeeDashboard />} />
           <Route path="addjob" element={<EmployeeCRUD />} />
           <Route path="applications" element={<Applicant />} />
-          <Route path="singlejobpost/:id" element={<JobPostView/>} />
-
+          <Route path="singlejobpost/:id" element={<JobPostView />} />
         </Route>
 
         <Route path="/jobs" element={<AllJobs />} />
         <Route path="/applicantprofile" element={<ApplicantProfile />} />
-        <Route path="/singlepost/:id" element={<SingleJobView />} />
-
-        
+        <Route path="/applicantsinglepost/:id" element={<SingleJobView />} />
       </Routes>
     </>
   );

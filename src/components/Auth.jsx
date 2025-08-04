@@ -66,7 +66,7 @@ const Auth = ({ fromRegisterPage }) => {
   try {
     const token = credentialResponse.credential;
 
-    const res = await axios.post("http://localhost:5000/auth/google", {
+    const res = await axios.post("http://localhost:3000/auth/google", {
       token,
     });
 
@@ -107,12 +107,12 @@ const Auth = ({ fromRegisterPage }) => {
           {/* Right Side Form */}
           <Col md={6}>
             <Link to={"/"} style={{ textDecoration: "none" }}>
-              <h1 className="fw-bold text-white">NexHire</h1>
+              <h1 className="fw-bold text-white">Nex<span className="text-primary">Hire</span></h1>
             </Link>
 
             <h4 className="mt-3 fw-semibold text-white-50">
               Sign{" "}
-              <span className="text-success">
+              <span className="text-primary">
                 {fromRegisterPage ? "Up" : "In"}
               </span>{" "}
               to your account
@@ -196,7 +196,7 @@ const Auth = ({ fromRegisterPage }) => {
               {/* Button */}
               <button
                 type="submit"
-                className="btn btn-success mt-3 w-100 fw-semibold rounded-pill"
+                className="btn btn-primary mt-3 w-100 fw-semibold rounded-pill"
                 onClick={onBtnClick}
               >
                 {fromRegisterPage ? "Register" : "Login"}
@@ -239,7 +239,7 @@ const Auth = ({ fromRegisterPage }) => {
                     Already have an account?{" "}
                     <Link
                       to="/login"
-                      className="text-success text-decoration-none"
+                      className="text-primary text-decoration-none"
                     >
                       Login
                     </Link>
@@ -249,7 +249,7 @@ const Auth = ({ fromRegisterPage }) => {
                     New here?{" "}
                     <Link
                       to="/register"
-                      className="text-success text-decoration-none"
+                      className="text-primary text-decoration-none"
                     >
                       Register
                     </Link>

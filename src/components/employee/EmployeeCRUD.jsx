@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Eye, Edit, Trash2, Plus } from "lucide-react";
 import { Modal, Button, Form } from "react-bootstrap";
 import EditJobPost from "./EditJobPost";
@@ -7,8 +7,10 @@ import { deletePost, getAllJobPosts, postJob } from "../../services/allAPI";
 import baseURL from "../../services/baseURL";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
+import  { editJobContext } from "../../context/JobEditContext";
 
 const EmployeeCRUD = () => {
+  const{dataresponse,setDataResponse} = useContext(editJobContext)
   const navigate = useNavigate();
 
 
@@ -144,7 +146,7 @@ const EmployeeCRUD = () => {
 
   useEffect(() => {
     getAllPosts();
-  }, [searchKey]);
+  }, [searchKey,dataresponse]);
 
   const onDeleteBtn = async (id) => {
     const token = sessionStorage.getItem("jwttoken");

@@ -25,7 +25,11 @@ const JobPostView = () => {
   return (
     <div style={styles.container}>
       <div style={styles.innerWrapper}>
-        <button className="btn" onClick={() => navigate(-1)} style={styles.backButton}>
+        <button
+          className="btn"
+          onClick={() => navigate(-1)}
+          style={styles.backButton}
+        >
           Back
         </button>
         <div style={styles.card}>
@@ -35,8 +39,8 @@ const JobPostView = () => {
               <h1 style={styles.title}>{data.title}</h1>
               <h2 style={styles.company}>{data.company}</h2>
               <p style={styles.meta}>
-                 {data.location} <br />
-                 Posted {data.time ? moment(data.time).fromNow() : "Recently"}
+                {data.location} <br />
+                Posted {data.time ? moment(data.time).fromNow() : "Recently"}
               </p>
             </div>
             <img

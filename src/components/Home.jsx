@@ -67,6 +67,8 @@ const Home = () => {
     }
   };
 
+  
+
   return (
     <>
       <Header />
@@ -310,36 +312,8 @@ const Home = () => {
           </div>
         </section>
 
-        {/* Top Companies Section */}
-        {/* <div className="container py-5">
-            <h2 className="text-center fw-bold mb-4">
-              Top Companies Hiring From Us
-            </h2>
-            <div className="row text-center mt-5">
-              {[
-                "google.com",
-                "microsoft.com",
-                "amazon.com",
-                "meta.com",
-                "tcs.com",
-                "infosys.com",
-                "accenture.com",
-                "adobe.com",
-              ].map((domain, index) => (
-                <div className="col-md-3 mb-4" key={index}>
-                  <img
-                    src={`https://logo.clearbit.com/${domain}`}
-                    alt={domain}
-                    width="80"
-                    height="80"
-                  />
-                  <p className="mt-2 fw-semibold">
-                    {domain.replace(".com", "").toUpperCase()}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div> */}
+      
+       
 
         {/* Testimonials */}
         <section className="py-5 py-lg-7">
@@ -400,19 +374,7 @@ const Home = () => {
           </div>
         </section>
 
-        {/* Final CTA */}
-        <div className="container py-5 text-center">
-          <h2 className="fw-bold">Ready to find your next opportunity?</h2>
-          <p className="mb-4">
-            Join thousands of users getting hired through NexHire every day.
-          </p>
-          <Link
-            to="/register"
-            className="btn btn-light text-black px-5 py-2 rounded-pill fw-semibold"
-          >
-            Get Started
-          </Link>
-        </div>
+       
       </div>
       <Footer />
     </>

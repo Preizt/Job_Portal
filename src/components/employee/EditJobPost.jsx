@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Edit } from "lucide-react";
 import { Button, Modal } from "react-bootstrap";
 import baseURL from "../../services/baseURL";
 import { toast } from "react-toastify";
 import { updateJob } from "../../services/allAPI";
+import { editJobContext } from "../../context/JobEditContext";
 
 
 const EditJobPost = ({ job }) => {
+  const { dataresponse, setDataResponse } = useContext(editJobContext);
 
-  
   const [data, setData] = useState({
     title: "",
     description: "",
@@ -20,7 +21,7 @@ const EditJobPost = ({ job }) => {
   });
 
   const jobId = job?._id;
-  
+
   const [show, setShow] = useState(false);
 
   useEffect(() => {
@@ -37,9 +38,9 @@ const EditJobPost = ({ job }) => {
     }
   }, [job]);
 
-   const [preview, setPreview] = useState();
+  const [preview, setPreview] = useState();
 
-   useEffect(() => {
+  useEffect(() => {
     if (data.image) {
       if (
         data.image.type == "image/png" ||
@@ -54,56 +55,50 @@ const EditJobPost = ({ job }) => {
   const handleShow = () => setShow(true);
   const handleClose = () => setShow(false);
 
-  
-  
+  const updatingJobPost = async () => {
+    if (
+      data.image &&
+      data.title &&
+      data.company &&
+      data.salary &&
+      data.description &&
+      data.requirements &&
+      data.location
+    ) {
+      try {
+        const payload = new FormData();
 
-   const updatingJobPost = async () => {
-      if (
-        data.image &&
-        data.title &&
-        data.company &&
-        data.salary &&
-        data.description &&
-        data.requirements &&
-        data.location
-      ) {
-        try {
-          const payload = new FormData();
-  
-          payload.append("image", data.image);
-          payload.append("title", data.title);
-          payload.append("description", data.description);
-          payload.append("salary", data.salary);
-          payload.append("company", data.company);
-          payload.append("requirements", data.requirements);
-          payload.append("location", data.location);
-  
-          const token = sessionStorage.getItem("jwttoken");
-          const reqHeader = { "Authorization": `Bearer ${token}` };
-          const apiResponse = await updateJob(payload, reqHeader,jobId);
-          if (apiResponse.status === 200) {
-            toast.success("Post Updated");
-            setShow(false);
-  
+        payload.append("image", data.image);
+        payload.append("title", data.title);
+        payload.append("description", data.description);
+        payload.append("salary", data.salary);
+        payload.append("company", data.company);
+        payload.append("requirements", data.requirements);
+        payload.append("location", data.location);
+
+        const token = sessionStorage.getItem("jwttoken");
+        const reqHeader = { Authorization: `Bearer ${token}` };
+        const apiResponse = await updateJob(payload, reqHeader, jobId);
+        if (apiResponse.status === 200) {
+          setDataResponse(apiResponse.data)
+          toast.success("Post Updated");
+          setShow(false);
           
-  
-            setPreview(null);
-            
-          } else {
-            toast.error("Something went wrong!");
-          }
-        } catch (error) {
-          console.log(error);
-  
-          toast.error("Server error occurred");
+          setPreview(null);
+        } else {
+          toast.error("Something went wrong!");
         }
-      } else {
-        toast.warning(
-          "Please fill in all required fields and upload a valid image."
-        );
+      } catch (error) {
+        console.log(error);
+
+        toast.error("Server error occurred");
       }
-    };
-  
+    } else {
+      toast.warning(
+        "Please fill in all required fields and upload a valid image."
+      );
+    }
+  };
 
   return (
     <>
@@ -154,9 +149,7 @@ const EditJobPost = ({ job }) => {
                 className="form-control mt-2"
                 placeholder="Job Title"
                 value={data.title}
-                onChange={(e) =>
-                  setData({ ...data, title: e.target.value })
-                }
+                onChange={(e) => setData({ ...data, title: e.target.value })}
               />
               <textarea
                 className="form-control mt-2"
@@ -172,27 +165,21 @@ const EditJobPost = ({ job }) => {
                 className="form-control mt-2"
                 placeholder="Company"
                 value={data.company}
-                onChange={(e) =>
-                  setData({ ...data, company: e.target.value })
-                }
+                onChange={(e) => setData({ ...data, company: e.target.value })}
               />
               <input
                 type="text"
                 className="form-control mt-2"
                 placeholder="Location"
                 value={data.location}
-                onChange={(e) =>
-                  setData({ ...data, location: e.target.value })
-                }
+                onChange={(e) => setData({ ...data, location: e.target.value })}
               />
               <input
                 type="text"
                 className="form-control mt-2"
                 placeholder="Salary"
                 value={data.salary}
-                onChange={(e) =>
-                  setData({ ...data, salary: e.target.value })
-                }
+                onChange={(e) => setData({ ...data, salary: e.target.value })}
               />
               <input
                 type="text"
@@ -211,10 +198,7 @@ const EditJobPost = ({ job }) => {
           <Button variant="secondary" onClick={handleClose}>
             Close
           </Button>
-          <Button
-            variant="primary"
-             onClick={updatingJobPost}
-          >
+          <Button variant="primary" onClick={updatingJobPost}>
             Update
           </Button>
         </Modal.Footer>

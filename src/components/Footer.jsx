@@ -62,7 +62,7 @@ const Footer = () => {
 
         {/* Copyright */}
         <div className="copright-div mt-4">
-          <p className="small text-secondary">© {new Date().getFullYear()} Jobify. All Rights Reserved.</p>
+          <p className="small text-secondary">© {new Date().getFullYear()} Nex<span className='text-primary'>Hire</span>. All Rights Reserved.</p>
         </div>
       </footer>
     </div>
