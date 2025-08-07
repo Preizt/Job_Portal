@@ -4,14 +4,10 @@
   box-sizing: border-box;
 }
 
-
-
-
-
 /* Home Button */
 
 .home-container {
-  font-family: 'Segoe UI', sans-serif;
+  font-family: "Segoe UI", sans-serif;
 }
 
 .btn {
@@ -25,7 +21,6 @@
 .bg-dark {
   background-color: #111 !important;
 }
-
 
 /* Footer Design */
 
@@ -116,7 +111,8 @@ input:focus {
   box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
 }
 
-input, label {
+input,
+label {
   font-weight: 500;
 }
 
@@ -132,7 +128,7 @@ input, label {
 
 .loader:before,
 .loader:after {
-  content: '';
+  content: "";
   display: block;
   position: absolute;
   top: 0;
@@ -145,9 +141,9 @@ input, label {
 }
 
 .loader:after {
-  color: #2196F3; /* Blue */
+  color: #2196f3; /* Blue */
   transform: rotateY(70deg);
-  animation-delay: .4s;
+  animation-delay: 0.4s;
 }
 
 @keyframes rotate {
@@ -169,31 +165,32 @@ input, label {
 }
 
 @keyframes spin {
-  0%, 100% {
-    box-shadow: .2em 0px 0 0px currentcolor;
+  0%,
+  100% {
+    box-shadow: 0.2em 0px 0 0px currentcolor;
   }
   12% {
-    box-shadow: .2em .2em 0 0 currentcolor;
+    box-shadow: 0.2em 0.2em 0 0 currentcolor;
   }
   25% {
-    box-shadow: 0 .2em 0 0px currentcolor;
+    box-shadow: 0 0.2em 0 0px currentcolor;
   }
   37% {
-    box-shadow: -.2em .2em 0 0 currentcolor;
+    box-shadow: -0.2em 0.2em 0 0 currentcolor;
   }
   50% {
-    box-shadow: -.2em 0 0 0 currentcolor;
+    box-shadow: -0.2em 0 0 0 currentcolor;
   }
   62% {
-    box-shadow: -.2em -.2em 0 0 currentcolor;
+    box-shadow: -0.2em -0.2em 0 0 currentcolor;
   }
   75% {
-    box-shadow: 0px -.2em 0 0 currentcolor;
+    box-shadow: 0px -0.2em 0 0 currentcolor;
   }
   87% {
-    box-shadow: .2em -.2em 0 0 currentcolor;
+    box-shadow: 0.2em -0.2em 0 0 currentcolor;
   }
-} 
+}
 
 .job-card {
   transition: box-shadow 0.2s ease;
@@ -203,5 +200,3 @@ input, label {
 .job-card:hover {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
 }
-
-
