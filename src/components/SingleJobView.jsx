@@ -26,6 +26,7 @@ import {
 import baseURL from "../services/baseURL";
 import moment from "moment";
 import { toast } from "react-toastify";
+import socket, { connectSocket, onNewJobPost } from "../services/socketService";
 
 const SingleJobView = () => {
   const [applyData, setApplyData] = useState({
@@ -158,7 +159,7 @@ const SingleJobView = () => {
   const getAppliedJobs = async () => {
     const token = sessionStorage.getItem("jwttoken");
     if (!token) {
-      toast.warning("Please Login");
+      // toast.warning("Please Login");
       navigate();
       return;
     }
@@ -175,6 +176,7 @@ const SingleJobView = () => {
 
         const ids = appliedJobs.map((item) => item.job._id);
         setAppliedJobIds(ids);
+        getAppliedJobs();
       }
     } catch (error) {
       console.error("Failed to fetch applied jobs:", error);
@@ -183,6 +185,22 @@ const SingleJobView = () => {
 
   useEffect(() => {
     getAppliedJobs();
+  }, []);
+
+  useEffect(() => {
+    const token = sessionStorage.getItem("jwttoken");
+    if (token) {
+      connectSocket(token);
+    }
+
+    onNewJobPost((job) => {
+      toast.info(`New Job Posted by ${job.company}: ${job.title}`);
+      jobView();
+    });
+
+    return () => {
+      socket.off("newJobPost");
+    };
   }, []);
 
   const role = sessionStorage.getItem("role");
@@ -259,7 +277,15 @@ const SingleJobView = () => {
               </div>
 
               <div style={styles.actionButtons}>
-                {role === "applicant" ? (
+                {!sessionStorage.getItem("jwttoken") ? (
+                  <div className="text-danger mt-3 text-center">
+                    Please{" "}
+                    <a href="/login" style={{ textDecoration: "none" }}>
+                      login
+                    </a>{" "}
+                    to apply this job.
+                  </div>
+                ) : role === "applicant" ? (
                   <>
                     <Button
                       variant={isSaved ? "success" : "outline-primary"}

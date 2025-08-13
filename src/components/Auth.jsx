@@ -1,12 +1,15 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Col, FloatingLabel, Row, Form } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { loginUser, registerUser } from "../services/allAPI";
 import { GoogleLogin } from "@react-oauth/google";
 import axios from "axios";
+import { connectSocket } from "../services/socketService";
+import { LoginContext } from "../context/AuthContext";
 
 const Auth = ({ fromRegisterPage }) => {
+  const { isLoggined, setIsLoginned } = useContext(LoginContext);
   const navigate = useNavigate();
   const [data, setData] = useState({
     name: "",
@@ -40,13 +43,14 @@ const Auth = ({ fromRegisterPage }) => {
       if (email && password) {
         const apiResponse = await loginUser(data);
         //  console.log(apiResponse.data.UserDetail.role);
-
+        setIsLoginned(true);
         if (apiResponse.status == 200) {
           sessionStorage.setItem("jwttoken", apiResponse.data.jwttoken);
           sessionStorage.setItem("role", apiResponse.data.UserDetail.role);
           sessionStorage.setItem("name", apiResponse.data.UserDetail.name);
 
           if (apiResponse.data.UserDetail.role == "applicant") {
+            connectSocket(apiResponse.data.jwttoken);
             navigate("/");
             toast.success("Login Successfull");
           } else {
@@ -62,31 +66,32 @@ const Auth = ({ fromRegisterPage }) => {
     }
   };
 
- const handleGoogleLogin = async (credentialResponse) => {
-  try {
-    const token = credentialResponse.credential;
+  const handleGoogleLogin = async (credentialResponse) => {
+    try {
+      const token = credentialResponse.credential;
 
-    const res = await axios.post("http://localhost:3000/auth/google", {
-      token,
-    });
+      const res = await axios.post("http://localhost:3000/auth/google", {
+        token,
+      });
+      setIsLoginned(true);
+      // Use the correct keys from response
+      sessionStorage.setItem("jwttoken", res.data.jwttoken);
+      sessionStorage.setItem("role", res.data.UserDetail.role);
+      sessionStorage.setItem("name", res.data.UserDetail.name);
 
-    // Use the correct keys from response
-    sessionStorage.setItem("jwttoken", res.data.jwttoken);
-    sessionStorage.setItem("role", res.data.UserDetail.role);
-    sessionStorage.setItem("name", res.data.UserDetail.name);
-
-    if (res.data.UserDetail.role === "applicant") {
-      navigate("/");
-      toast.success("Google Login Successful");
-    } else {
-      navigate("/employer/dashboard");
-      toast.success("Employer Google Login Successful");
+      if (res.data.UserDetail.role === "applicant") {
+        connectSocket(res.data.jwttoken);
+        navigate("/");
+        toast.success("Google Login Successful");
+      } else {
+        navigate("/employer/dashboard");
+        toast.success("Employer Google Login Successful");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Google login failed");
     }
-  } catch (error) {
-    console.error(error);
-    toast.error("Google login failed");
-  }
-};
+  };
 
   return (
     <div
@@ -107,7 +112,9 @@ const Auth = ({ fromRegisterPage }) => {
           {/* Right Side Form */}
           <Col md={6}>
             <Link to={"/"} style={{ textDecoration: "none" }}>
-              <h1 className="fw-bold text-white">Nex<span className="text-primary">Hire</span></h1>
+              <h1 className="fw-bold text-white">
+                Nex<span className="text-primary">Hire</span>
+              </h1>
             </Link>
 
             <h4 className="mt-3 fw-semibold text-white-50">

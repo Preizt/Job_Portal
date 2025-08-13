@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import {
   BarChart,
   Bar,
@@ -8,38 +9,78 @@ import {
   CartesianGrid,
   ResponsiveContainer,
 } from "recharts";
-
-const data = [
-  { name: "Jan", Applications: 30 },
-  { name: "Feb", Applications: 45 },
-  { name: "Mar", Applications: 28 },
-  { name: "Apr", Applications: 60 },
-  { name: "May", Applications: 40 },
-  { name: "Jun", Applications: 70 },
-];
-
-const recentApplications = [
-  { name: "John Doe", position: "Frontend Developer", date: "2025-07-25" },
-  { name: "Jane Smith", position: "UI/UX Designer", date: "2025-07-24" },
-  { name: "Michael Lee", position: "Backend Developer", date: "2025-07-23" },
-];
+import { getChartData, getDashBoard } from "../../services/allAPI";
 
 const EmployeeDashboard = () => {
+  const [chart, setChart] = useState([]);
+  const [stats, setStats] = useState({});
+
+  console.log(chart);
+
+  useEffect(() => {
+    dashboardStats();
+    chartData();
+  }, []);
+
+  const dashboardStats = async () => {
+    const token = sessionStorage.getItem("jwttoken");
+
+    if (token) {
+      try {
+        const reqHeader = { Authorization: `Bearer ${token}` };
+
+        const apiResponse = await getDashBoard(reqHeader);
+
+        if (apiResponse.status === 200) {
+          setStats(apiResponse.data);
+        } else {
+          alert(apiResponse.data);
+        }
+      } catch (err) {
+        alert(err.message || "Something went wrong while fetching jobs");
+      }
+    } else {
+      toast.error("Please login first");
+    }
+  };
+
+  const chartData = async () => {
+    const token = sessionStorage.getItem("jwttoken");
+
+    if (token) {
+      try {
+        const reqHeader = { Authorization: `Bearer ${token}` };
+
+        const apiResponse = await getChartData(reqHeader);
+
+        if (apiResponse.status === 200) {
+          setChart(apiResponse.data);
+        } else {
+          alert(apiResponse.data);
+        }
+      } catch (err) {
+        alert(err.message || "Something went wrong while fetching jobs");
+      }
+    } else {
+      toast.error("Please login first");
+    }
+  };
+
   return (
     <div style={styles.container}>
       {/* Summary Cards */}
       <div style={styles.cardContainer}>
         <div style={styles.card}>
           <h5 style={styles.cardTitle}>Total Job Posts</h5>
-          <h2 style={styles.cardNumber}>12</h2>
+          <h2 style={styles.cardNumber}>{stats.totalJobPosts}</h2>
         </div>
         <div style={styles.card}>
           <h5 style={styles.cardTitle}>Total Applications</h5>
-          <h2 style={styles.cardNumber}>245</h2>
+          <h2 style={styles.cardNumber}>{stats.totalApplications}</h2>
         </div>
         <div style={styles.card}>
           <h5 style={styles.cardTitle}>Pending Reviews</h5>
-          <h2 style={styles.cardNumber}>8</h2>
+          <h2 style={styles.cardNumber}>{stats.pendingApplications}</h2>
         </div>
       </div>
 
@@ -48,7 +89,7 @@ const EmployeeDashboard = () => {
         <h4 style={styles.sectionTitle}>Monthly Applications Overview</h4>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart
-            data={data}
+            data={chart}
             margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
           >
             <CartesianGrid strokeDasharray="3 3" stroke="#333" />
@@ -62,20 +103,6 @@ const EmployeeDashboard = () => {
             <Bar dataKey="Applications" fill="#4FC3F7" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
-      </div>
-
-      {/* Recent Applications */}
-      <div style={styles.recentBox}>
-        <h4 style={styles.sectionTitle}>Recent Job Applications</h4>
-        <ul>
-          {recentApplications.map((app, index) => (
-            <li key={index} style={styles.listItem}>
-              <strong style={{ color: "#fff" }}>{app.name}</strong> applied for{" "}
-              <em style={{ color: "#90caf9" }}>{app.position}</em> on{" "}
-              <span style={{ color: "#ccc" }}>{app.date}</span>
-            </li>
-          ))}
-        </ul>
       </div>
     </div>
   );

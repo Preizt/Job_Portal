@@ -2,19 +2,14 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Modal, Button } from "react-bootstrap";
 
-const EmployeeSidePanel = () => {
+const EmployeeSidePanel = ({ toggleSidebar }) => {
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
   const navItems = [
     { to: "/employer/dashboard", icon: "fa-chart-line", label: "Dashboard" },
-    {
-      to: "/employer/addjob",
-      icon: "fa-briefcase",
-      label: "Job Listing",
-    },
-    // { to: "/employer/manage", icon: "fa-pen-to-square", label: "Manage Posts" },
+    { to: "/employer/addjob", icon: "fa-briefcase", label: "Job Listing" },
     { to: "/employer/applications", icon: "fa-users", label: "Applications" },
   ];
 
@@ -25,6 +20,13 @@ const EmployeeSidePanel = () => {
 
   return (
     <div style={styles.sidebar}>
+      {/* Close Button */}
+      <div style={styles.toggleWrapper}>
+        <button onClick={toggleSidebar} style={styles.toggleBtn}>
+          <i className="fa-solid fa-xmark" />
+        </button>
+      </div>
+
       {/* Brand */}
       <div style={styles.brand}>
         <Link to={"/"} style={{ textDecoration: "none" }}>
@@ -35,7 +37,7 @@ const EmployeeSidePanel = () => {
         <hr style={{ borderColor: "#444", opacity: 0.3 }} />
       </div>
 
-      {/* Dashboard Section */}
+      {/* Section Title */}
       <h6 style={styles.sectionTitle}>EMPLOYER PANEL</h6>
 
       {/* Navigation */}
@@ -63,7 +65,7 @@ const EmployeeSidePanel = () => {
         {/* Back to Home */}
         <li style={{ ...styles.navItem, marginTop: "40px" }}>
           <button
-            onClick={() => setShowModal(true)}
+            onClick={handleLogout}
             style={{
               ...styles.navLink,
               backgroundColor: "transparent",
@@ -79,59 +81,10 @@ const EmployeeSidePanel = () => {
           </button>
         </li>
       </ul>
-
-      {/* Logout Confirmation Modal */}
-      <Modal
-        show={showModal}
-        onHide={() => setShowModal(false)}
-        centered
-        backdrop="static"
-        keyboard={false}
-      >
-        <Modal.Header
-          closeButton
-          style={{
-            backgroundColor: "#121212",
-            borderBottom: "1px solid #1f1f1f",
-            color: "#fff",
-          }}
-        >
-          <Modal.Title>Are you Sure ?</Modal.Title>
-        </Modal.Header>
-
-        <Modal.Footer
-          style={{
-            backgroundColor: "#121212",
-            borderTop: "1px solid #1f1f1f",
-          }}
-        >
-          <Button
-            variant="outline-light"
-            onClick={() => setShowModal(false)}
-            style={{
-              borderColor: "#007bff",
-              color: "#007bff",
-            }}
-          >
-            Cancel
-          </Button>
-          <Button
-            style={{
-              backgroundColor: "#007bff",
-              border: "none",
-              color: "#fff",
-            }}
-            onClick={handleLogout}
-          >
-            Go HomePage
-          </Button>
-        </Modal.Footer>
-      </Modal>
     </div>
   );
 };
 
-// 🎨 Sidebar Styles
 const styles = {
   sidebar: {
     width: "250px",
@@ -140,10 +93,24 @@ const styles = {
     padding: "20px 15px",
     color: "#fff",
     boxShadow: "2px 0 12px rgba(0,0,0,0.3)",
+    position: "relative",
+  },
+  toggleWrapper: {
+    position: "absolute",
+    top: "10px",
+    right: "10px",
+  },
+  toggleBtn: {
+    background: "transparent",
+    border: "none",
+    color: "#bbb",
+    fontSize: "20px",
+    cursor: "pointer",
   },
   brand: {
     textAlign: "center",
     marginBottom: "15px",
+    marginTop: "30px",
   },
   brandText: {
     fontWeight: "bold",

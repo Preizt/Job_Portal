@@ -7,12 +7,11 @@ import { deletePost, getAllJobPosts, postJob } from "../../services/allAPI";
 import baseURL from "../../services/baseURL";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
-import  { editJobContext } from "../../context/JobEditContext";
+import { editJobContext } from "../../context/JobEditContext";
 
 const EmployeeCRUD = () => {
-  const{dataresponse,setDataResponse} = useContext(editJobContext)
+  const { dataresponse, setDataResponse } = useContext(editJobContext);
   const navigate = useNavigate();
-
 
   const [searchKey, setSearchKey] = useState("");
   const [jobs, setJob] = useState([]);
@@ -146,7 +145,7 @@ const EmployeeCRUD = () => {
 
   useEffect(() => {
     getAllPosts();
-  }, [searchKey,dataresponse]);
+  }, [searchKey, dataresponse]);
 
   const onDeleteBtn = async (id) => {
     const token = sessionStorage.getItem("jwttoken");
@@ -194,29 +193,40 @@ const EmployeeCRUD = () => {
         <div style={darkStyles.cardWrapper}>
           {[...jobs].reverse().map((job, index) => (
             <div key={index} style={{ position: "relative" }}>
-              {/* Time on top-right of the card */}
-              <span
+              {/* The actual card */}
+              <div
                 style={{
-                  position: "absolute",
-                  top: "4px",
-                  right: "10px",
-                  fontSize: "12px",
-                  color: "#bbb",
-                  background: "rgba(0,0,0,0.5)",
-                  padding: "4px 8px",
-                  borderRadius: "12px",
+                  ...darkStyles.card,
+                  paddingTop: "30px",
+                  position: "relative",
                 }}
               >
-                Posted {moment(job.time).fromNow()}
-              </span>
+                {/* Time Badge (absolute positioning for better control) */}
+                <span
+                  style={{
+                    position: "absolute",
+                    top: "5px",
+                    right: "10px",
+                    fontSize: "12px",
+                    color: "#bbb",
+                    background: "rgba(0,0,0,0.5)",
+                    padding: "4px 8px",
+                    borderRadius: "12px",
+                  }}
+                >
+                  Posted {moment(job.time).fromNow()}
+                </span>
 
-              {/* The actual card */}
-              <div style={{ ...darkStyles.card, paddingTop: "30px" }}>
-                <img
-                  src={`${baseURL}/uploads/${job.image}`}
-                  alt="Logo"
-                  style={darkStyles.logo}
-                />
+                {/* Company Logo */}
+                <div style={{ textAlign: "center", marginBottom: "10px" }}>
+                  <img
+                    src={`${baseURL}/uploads/${job.image}`}
+                    alt="Logo"
+                    style={darkStyles.logo}
+                  />
+                </div>
+
+                {/* Card Content */}
                 <div style={darkStyles.cardContent}>
                   <h4 style={darkStyles.title}>{job.title}</h4>
                   <p style={darkStyles.info}>
@@ -229,13 +239,24 @@ const EmployeeCRUD = () => {
                     <strong>Location:</strong> {job.location}
                   </p>
 
-                  <div style={darkStyles.buttonGroup}>
+                  {/* Button Group */}
+                  <div
+                    style={{
+                      ...darkStyles.buttonGroup,
+                      display: "flex",
+                      justifyContent: "space-between",
+                      gap: "10px",
+                      marginTop: "15px",
+                    }}
+                  >
                     <button
                       style={{
                         ...darkStyles.button,
                         backgroundColor: "#1e88e5",
                       }}
-                      onClick={() => navigate(`/employer/singlejobpost/${job._id}`)}
+                      onClick={() =>
+                        navigate(`/employer/singlejobpost/${job._id}`)
+                      }
                     >
                       <Eye size={16} color="#fff" />
                     </button>
@@ -274,10 +295,9 @@ const EmployeeCRUD = () => {
         </Modal.Header>
 
         <Modal.Body>
-          <div className="row">
-            {/* Left: Company Logo Upload */}
-            <div className="col-md-4 d-flex flex-column align-items-center">
-              <label>
+          <div className="row g-4">
+            <div className="col-md-4 text-center">
+              <label style={{ cursor: "pointer" }}>
                 <input
                   type="file"
                   accept="image/*"
@@ -294,7 +314,11 @@ const EmployeeCRUD = () => {
                   }
                   alt="Company Logo"
                   className="img-fluid border rounded"
-                  style={{ width: "100%", height: "auto", cursor: "pointer" }}
+                  style={{
+                    maxWidth: "200px",
+                    height: "auto",
+                    objectFit: "contain",
+                  }}
                 />
               </label>
               {imageType && (
@@ -304,16 +328,15 @@ const EmployeeCRUD = () => {
               )}
             </div>
 
-            {/* Right: Form Fields */}
             <div className="col-md-8">
               <input
                 type="text"
-                className="form-control mt-2"
+                className="form-control mb-2"
                 placeholder="Job Title"
                 onChange={(e) => setData({ ...data, title: e.target.value })}
               />
               <textarea
-                className="form-control mt-2"
+                className="form-control mb-2"
                 placeholder="Description"
                 rows="3"
                 onChange={(e) =>
@@ -322,35 +345,29 @@ const EmployeeCRUD = () => {
               />
               <input
                 type="text"
-                className="form-control mt-2"
+                className="form-control mb-2"
                 placeholder="Company"
-                onChange={(e) => {
-                  setData({ ...data, company: e.target.value });
-                }}
+                onChange={(e) => setData({ ...data, company: e.target.value })}
               />
               <input
                 type="text"
-                className="form-control mt-2"
+                className="form-control mb-2"
                 placeholder="Location"
-                onChange={(e) => {
-                  setData({ ...data, location: e.target.value });
-                }}
+                onChange={(e) => setData({ ...data, location: e.target.value })}
               />
               <input
                 type="text"
-                className="form-control mt-2"
+                className="form-control mb-2"
                 placeholder="Salary"
-                onChange={(e) => {
-                  setData({ ...data, salary: e.target.value });
-                }}
+                onChange={(e) => setData({ ...data, salary: e.target.value })}
               />
               <input
                 type="text"
-                className="form-control mt-2"
+                className="form-control mb-2"
                 placeholder="Requirements"
-                onChange={(e) => {
-                  setData({ ...data, requirements: e.target.value });
-                }}
+                onChange={(e) =>
+                  setData({ ...data, requirements: e.target.value })
+                }
               />
             </div>
           </div>
@@ -384,12 +401,12 @@ const styles = {
   },
   topBar: {
     display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: "30px",
     flexWrap: "wrap",
+    justifyContent: "space-between",
     gap: "10px",
+    marginBottom: "30px",
   },
+
   addButton: {
     display: "flex",
     alignItems: "center",
@@ -422,13 +439,13 @@ const styles = {
 };
 const darkStyles = {
   cardWrapper: {
-    display: "flex",
-    flexWrap: "wrap",
-    gap: "20px",
-
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+    gap: "30px",
     padding: "20px",
-    backgroundColor: "#121212", // Dark background
+    backgroundColor: "#121212",
   },
+
   card: {
     width: "300px",
     backgroundColor: "#1e1e1e", // Card background

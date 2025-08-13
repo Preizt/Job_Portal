@@ -8,10 +8,12 @@ import moment from "moment";
 import { MapPin, DollarSign, Clock } from "lucide-react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import socket, { connectSocket, onNewJobPost } from "../services/socketService";
 
 const AllJobs = () => {
   const navigate = useNavigate();
-  const [jobs, setJobs] = useState({});
+  const [jobs, setJobs] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const applicantAllJobs = async () => {
     try {
@@ -28,7 +30,27 @@ const AllJobs = () => {
 
   useEffect(() => {
     applicantAllJobs();
+
+    const token = sessionStorage.getItem("jwttoken");
+    if (token) {
+      connectSocket(token);
+    }
+
+    const jobListener = (job) => {
+      toast.info(`New Job Posted by ${job.company}`);
+      applicantAllJobs();
+    };
+
+    onNewJobPost(jobListener);
+    return () => {
+      socket.off("newJobPost", jobListener);
+    };
   }, []);
+
+  // Filter jobs based on searchTerm
+  const filteredJobs = jobs.filter((job) =>
+    job.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <>
@@ -40,22 +62,23 @@ const AllJobs = () => {
             Start Your Future with NexHire
           </h1>
 
-          {/* Search Bar Only */}
+          {/* Search Bar */}
           <div className="mb-4">
             <Form>
               <Form.Control
                 type="text"
                 placeholder=" Search by job title"
                 className="rounded-pill px-4 py-2 shadow-sm"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </Form>
           </div>
 
           {/* Job Cards */}
-
           <Row className="g-4">
-            {jobs.length > 0 ? (
-              jobs
+            {filteredJobs.length > 0 ? (
+              filteredJobs
                 .slice()
                 .reverse()
                 .map((job) => (
@@ -80,7 +103,7 @@ const AllJobs = () => {
                           }
                         />
                         <div>
-                          <h6 className="mb-1  text-dark">{job.title}</h6>
+                          <h6 className="mb-1 text-dark">{job.title}</h6>
                           <p className="mb-0 text-secondary small">
                             {job.company}
                           </p>

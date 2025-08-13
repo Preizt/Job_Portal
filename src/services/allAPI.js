@@ -60,3 +60,24 @@ export const getappliedJobs  = async(reqHeader)=>{
 export const getUserDetail = async (reqHeader) => {
   return await commonAPI("get","/user",{},reqHeader)
 }
+
+export const applicationsPost  = async (reqHeader) => {
+  return await commonAPI("get","/jobapplication",{},reqHeader)
+}
+
+export const acceptApplication = async(reqHeader,id)=>{
+  return await commonAPI("patch",`/application/${id}`,{},reqHeader)
+}
+
+export const rejectApplication = async(reqHeader,id)=>{
+  return await commonAPI("patch",`/rejectapplication/${id}`,{},reqHeader)
+}
+
+export const getDashBoard  = async (reqHeader) => {
+  return await commonAPI("get","/employer/stats",{},reqHeader)
+}
+
+export const getChartData  = async (reqHeader) => {
+  return await commonAPI("get","/employer/chart",{},reqHeader)
+}
+ 
